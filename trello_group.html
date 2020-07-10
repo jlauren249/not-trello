@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: rgba(130, 147, 153, 0.63);
+        }
+        
+        .parent {
+            display:flex;
+            flex-wrap:wrap;
+            max-height:vw;
+            width:vw;
+        }
+        
+        .sticky{
+            background-color: rgb(190, 37, 183);
+            border: rgb(7, 7, 105) solid 2px;
+            border-radius: 10px;
+            padding: 10px;
+            margin:.5vw;
+            text-align:center;
+            font-size: 3vw;
+            font-family: 'Courgette', cursive;
+            color: white; 
+            min-height: 20vw;
+            height: auto;
+            min-width: 20vw;
+            max-width: 40%;
+            width: auto;
+            position: relative; 
+            display: flex;
+            align-items: center;          
+            
+        }
+
+        .text {
+            width: 100%;
+            margin: auto;
+            overflow-wrap: break-word;
+            padding: 2vw;
+
+        }
+        
+        .glow {
+            font-size: 30px;
+            color: #fff;
+            text-align: center;
+            -webkit-animation: glow 1s ease-in-out infinite alternate;
+            -moz-animation: glow 1s ease-in-out infinite alternate;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+          from {
+            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+          }
+          to {
+            text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+          }
+        }
+
+        .inputbox {
+            width:50%;
+            height:25px;    
+        }
+
+        .button {    
+            background-color: transparent;
+            border-style: none;
+            border-radius: 15%;
+            margin: 1.5vw;
+        }
+
+        .remove {
+            float: right;
+            font-size: 2vw;
+            position: absolute; 
+            bottom: 1vw;
+            right: 1vw;
+            background-color: transparent;
+            border-style: none;
+        }
+        
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+    </style> 
+    <script>
+        // function to automatically assign IDs and insert 'onmouseover' event w/function into all divs of class "sticky" in DOM
+        function setStickyId() {
+            let stickyNotes = document.getElementsByClassName("sticky");
+            for(let i = 0; i < stickyNotes.length; i++) {
+                stickyNotes[i].setAttribute("id", i);
+                stickyNotes[i].setAttribute("onmouseover", "wiggle(this)");
+                stickyNotes[i].setAttribute("onmouseout", "removeWiggleStyle(this)");
+            }
+            // every time you set the sticky ids the remove button ids also need to be set
+            setRemoveId()
+        }
+
+        // this function sets the id for every remove button and adds an onclick event to delete the stick
+        function setRemoveId() {
+            let stickyDelete = document.getElementsByClassName("remove");
+            for(let i = 0; i < stickyDelete.length; i++) {
+                stickyDelete[i].setAttribute("id", ("x"+ i));
+                stickyDelete[i].setAttribute("onClick", "deleteSticky(this)");
+            }
+        }
+        
+        // this function allows sticky note to be created on enter rather than having to press submit button
+        function checkEnter(event){
+            const x = event.keyCode;
+            if (x === 13){
+                createSticky();
+            }
+        }
+     
+
+        // this function creates a new sticky with whatever text the user entered in the text box
+        function createSticky() {
+            let userInput = document.getElementById("input").value;
+            document.getElementById("parent").innerHTML += "<div class='sticky'><div class='text'>" + userInput + "</div><button class ='remove'>X</button></div>";
+            document.getElementById("input").value = null;
+            setStickyId();
+        }
+
+        // this function makes the sticky wiggle when you mouse over it
+        function wiggle(x) {
+            let elementid = x.id;
+            document.getElementById(elementid).style.animation = "shake 1s infinite";
+        }
+
+        // this function removes the wiggling style when you move your mouse away from it
+        function removeWiggleStyle (x) {
+            let elementid = x.id;
+            document.getElementById(elementid).style.animation = "";
+        }
+
+        // this function hides stickies when the user clicks the remove button
+        function deleteSticky(x){
+            var y = x.id;
+            let parentId = y.split("x")[1];
+            document.getElementById(parentId).style.display = "none"; 
+
+        }
+        
+    </script>
+</head>
+<body onload="setStickyId()">
+    <div>
+        <input class="inputbox" type="text" id="input" placeholder="Please enter your text here" onkeypress="checkEnter(event)"></input>
+        <button class="glow button" id="submit" onclick="createSticky()">Submit</button>
+    </div>
+    <div class="parent" id="parent">
+        <div class="sticky">
+            <div class="text">Weed the garden!</div>
+            <button class ="remove">X</button>
+        </div>
+        <div class="sticky">
+            <div class="text">I like cake!</div>
+            <button class ="remove">X</button>
+        </div>
+        <div class="sticky">
+            <div class="text">remember to eat cake...</div>
+            <button class ="remove">X</button>
+        </div>
+        <div class="sticky">
+            <div class="text">what's that smell?</div>
+            <button class ="remove">X</button>
+        </div>
+        <div class="sticky">
+            <div class="text">Dogs are the best!</div>
+            <button class ="remove">X</button>
+        </div>
+        <div class ="sticky">
+            <button class ="remove">X</button>
+            <div class="text">This is a sticky with a lot of text on it. This is a sticky with a lot of text on it. This is a sticky with a lot of text on it. This is a sticky with a lot of text on it.</div>
+        </div>
+    </div>
+</body>
+</html>
